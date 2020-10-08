@@ -1,0 +1,8 @@
+Strategy: In passport a Strategy is a metho/way
+  of authenticating a user(jwt,username&password par exemple).
+  Strategies are pretty much plugins that we plug into our Passeport
+  Librarie.But itselt(passeport) just wanna know if the user is authenticated/not
+
+passport-jwt: Is an authentication strategy by token
+
+passport-local: Is a local auth strategy, to first authenticate a user by login/password
