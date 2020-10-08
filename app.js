@@ -5,14 +5,20 @@ import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import router from './router';
 import mongoose from 'mongoose';
+import errors from './middlewares/errors';
+import 'express-async-errors';
 
 // Configuration de la base de données
-mongoose.connect('mongodb://localhost:27017/auth', { useNewUrlParser: true });
+mongoose
+  .connect('mongodb://localhost:27017/auth', { useNewUrlParser: true })
+  .then(() => console.log('Connexion à la base de données établie'))
+  .catch((error) => console.log(error));
 
 const app = express();
-// App setup
-app.use(morgan('combined')); //logging framwork
+
+app.use(morgan('combined')); //framawork pour des logs
 app.use(bodyParser.json({ type: '*/*' }));
+app.use(errors);
 
 router(app);
 

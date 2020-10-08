@@ -1,18 +1,18 @@
-const passport = require('passport');
-const User = require('../models/user');
-const config = require('../config');
-const bcrypt = require('bcrypt');
+import passport from 'passport';
+import User from '../models/user';
+import config from '../config';
+import bcrypt from 'bcrypt';
 
 // 1. jwt-strategy
 const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');
 
-// 2.local strategy
+// 2.local strategy ou stratégie locale
 const LocalStrategy = require('passport-local');
 
 /**
- * 1.THIS IS THE JWT PASSPORT STRATEGY TO CHECK WHETHER/NOT USER IS AUTHENTICATED THROUGH IS TOKEN
- *   HERE ONLY THE TOKEN IS SENT.IN SOME WAYS THE USER HAD ALREADY RECEIVED A JWT FROM THE SERVER FROM A
- *   PREVIOUS AUTHENTICATION
+ * C'EST LA STRATÉGIE DE "passport-jwt" POUR VÉRIFIER SI L'UTILISATEUR EST AUTHENTIFIÉ OU NON PAR LE TOKEN
+ *  ICI SEUL LE JETON EST ENVOYÉ. D'UNE CERTAINE MANIÈRE, L'UTILISATEUR AVAIT DÉJÀ REÇU UN JWT DU SERVEUR
+ *  LORS D'UNE PRÉCÉDENTE AUTHENTIFICATION
  */
 // Setup options for JWT Strategy
 const jwtOptions = {
@@ -20,14 +20,14 @@ const jwtOptions = {
   secretOrKey: config.secret,
 };
 
-// Create JWT strategy
-// The ()=> function is the function that will be called whenever a user attempts to login
-// payload : decoded jwt token
-// done : callback to call if auth is succefull/not
+// Création d'une basée sur JWT
+// La fonction (payload,done)=> est celle qui est appelée à chaque fois que l'utilisateur tente de s'authentifier
+// payload : jwt décodé
+// done : la fonction de callback qui est appelée si l'authentification réussie ou échoue
 const jwtLogin = new JwtStrategy(jwtOptions, async (payload, done) => {
-  // See if the user is in the payload exists in our database
-  // if it does call done with the user
-  // Otherwise, call done without a user object
+  // 1.Vérifier si l'utilisateur dont les données se trouvant dans le payload existe dans la base de données
+  // 2.S'il existe,on appel la fonction done avec cet utilisateur
+  // 3.Sinon, on appelle avec la fonction sans spécifier un utilisateur(car non trouvé)
   try {
     const user = await User.findById(payload.sub);
     if (!user) return done(null, false);
@@ -37,48 +37,44 @@ const jwtLogin = new JwtStrategy(jwtOptions, async (payload, done) => {
   }
 });
 
-// Tell passport to use this strategy
+// Dire à passeport JS de se servir de la strategie "jwtLogin"
 passport.use(jwtLogin);
 
 /**
- * END OF THE JWT-PASSEPORT STRATEGY
+ * FIN DE LA STRATEGIE passeport-jwt
  */
 
 /**
- * 2. LOCAL STRATEGY : FIRST TIME WHEN A USER LOGGS IN, HE SHOULD BE AUTHENTICATED BY
- *   EMAIL/PASSWORD,THAT'S WHAT"S CALLED LOCAL STRATEGY.
- *   AFTER AUTHENTICATION VIA A LOCAL STRATEGIE(EMAIL/PASSWORD) THEN THE SERVER WILL PROVIDE A TOKEN
- *   SO THAT FOR THE FOLLOW UP REQUEST THE AUTH STATE WILL WE VERIFIED BY TOKEN
+ * 2. STRATÉGIE LOCALE : LA PREMIÈRE FOIS QU'UN UTILISATEUR SE CONNECTE, IL DOIT ÊTRE AUTHENTIFIÉ PAR
+ * EMAIL/MOT DE PASSE, C'EST CE QU'ON APPELLE LA STRATÉGIE LOCALE.
+ * APRÈS AUTHENTIFICATION VIA UNE STRATÉGIE LOCALE (CEMAIL/MOT DE PASSE), LE SERVEUR FOURNIT UN JETON(TOKEN)
+ * POUR LES AUTRES REQUETE QUI VIENNENT APRES, LA VERIFICATION SE FONT VIA LE TOKEN
  */
 
-//  The password is detected automatically
+//  Ici, le mot de passe est detecté automatiquement même s'il n'est pas spécifié dans l'objet
 const localStrategyOptions = {
   usernameField: 'email',
 };
 const localLogin = new LocalStrategy(
   localStrategyOptions,
   async (email, password, done) => {
-    //   Verify this username/password,call done with the user
-    //   If it's the correct username and password
-    //   Otherwise call done with false
-    try {
-      const user = await User.findOne({ email });
-      if (!user) return done(null, false);
+    //   1. Verify this username/password,call done with the user
+    //   2. If it's the correct username and password
+    //   3. Otherwise call done with false
 
-      // Compare passwords - is `password` equal to user.password?
-      // const isMatch = await user.comparePassword(password);
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        return done(null, false);
-      }
-      return done(null, user);
-    } catch (error) {
-      return done(error);
+    const user = await User.findOne({ email });
+    if (!user) return done(null, false);
+
+    // Comparaison des mots de passe -  `password` est il égal à user.password?
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return done(null, false);
     }
+    return done(null, user);
   }
 );
 
 passport.use(localLogin);
 /**
- * END LOCAL STRATEGY
+ * FIN DE LA STRATEGIE LOCALE
  */
