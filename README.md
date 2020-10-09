@@ -69,3 +69,10 @@ export default {
 Ce projet possède des logs qui sont une très bonne pratique dans le développement d'une API et vous permet d'avoir des informations telles que des rapports de bugs par exemple.Pour cela les libraries utilisées sont `winston` et `morgan` combinées.
 
 Si vous avez des questions, n'hesitez pas de m'écrire sur `christian.lisangola@gmail.com`
+
+## Ressources importantes
+
+- [Passeport.js](http://www.passportjs.org/)
+- [Json web token](https://jwt.io/)
+- [Morgan](https://github.com/expressjs/morgan)
+- [Winston](https://github.com/winstonjs/winston)
