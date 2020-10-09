@@ -1,13 +1,13 @@
 import passport from 'passport';
 import User from '../models/user';
-import config from '../config';
+import configToUse from '../config/keys';
 import bcrypt from 'bcrypt';
 
 // 1. jwt-strategy
-const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');
+import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 
 // 2.local strategy ou stratégie locale
-const LocalStrategy = require('passport-local');
+import LocalStrategy from 'passport-local';
 
 /**
  * C'EST LA STRATÉGIE DE "passport-jwt" POUR VÉRIFIER SI L'UTILISATEUR EST AUTHENTIFIÉ OU NON PAR LE TOKEN
@@ -17,7 +17,7 @@ const LocalStrategy = require('passport-local');
 // Setup options for JWT Strategy
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromHeader('authorization'),
-  secretOrKey: config.secret,
+  secretOrKey: configToUse.jwtSecret,
 };
 
 // Création d'une basée sur JWT
@@ -53,6 +53,9 @@ passport.use(jwtLogin);
 
 //  Ici, le mot de passe est detecté automatiquement même s'il n'est pas spécifié dans l'objet
 const localStrategyOptions = {
+  // usernameField, c'est à toi de definir la valeur qui sera dans req.body
+  // Pour le mot de passe,par defaut passeport va deviner en cherchant le champ password
+  // Sinon, vous pourriez aussi rajouter passwordField:'motDePasse' si c'est un nom en francais
   usernameField: 'email',
 };
 const localLogin = new LocalStrategy(

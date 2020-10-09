@@ -1,19 +1,36 @@
 import Authentication from './controllers/authentication';
 import './services/passport';
 import passeport from 'passport';
+import { Router } from 'express';
 
-// {session:false} => If user is authenticated, don't create a session
-// Because by default passeport wanna try to make a cookie-session based authentication
+const authRouter = Router();
+const autreRessource = Router();
+
+// {session:false} => Si l'utilisateur est connecté ne pas créer de session,car l'authentification
+//                    se fait par le token et non les cookies/session
 const requireAuth = passeport.authenticate('jwt', { session: false });
-const requireSigin = passeport.authenticate('local', { session: false });
+const requireSignin = passeport.authenticate('local', { session: false });
 
-export default function (app) {
-  // Middleware
-  app.get('/', requireAuth, (req, res) => {
-    res.send({
-      message: 'Voici comment proteger une route par authentification',
-    });
+/**
+ * AUTH ROUTER
+ */
+
+authRouter.post('/signin', requireSignin, Authentication.signin);
+authRouter.post('/signup', Authentication.signup);
+
+/**
+ * AUTRES RESSOURCES PROTEGEE
+ * Ceci est une route de test, mais ca pourrait n'importe quelle route
+ * requireAuth est le middleware qui protège la route, tout comme on peut ne pas en avoir
+ */
+// Middleware
+autreRessource.get('/', requireAuth, (req, res) => {
+  res.send({
+    message: 'Voici comment proteger une route par authentification',
   });
-  app.post('/signin', requireSigin, Authentication.signin);
-  app.post('/signup', Authentication.signup);
-}
+});
+
+export default {
+  authRouter,
+  autreRessource,
+};

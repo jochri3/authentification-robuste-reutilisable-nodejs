@@ -2,6 +2,9 @@ import User from '../models/user';
 import generateHashedPassword from '../lib/generate.hashed.password';
 import generateJWT from '../lib/token.for.user';
 
+/**
+ * POST /api/auth/signup
+ */
 const signup = async (req, res) => {
   const { email, password } = req.body;
 
@@ -26,6 +29,9 @@ const signup = async (req, res) => {
   res.json({ token: generateJWT(newUser) });
 };
 
+/**
+ * POST /api/auth/signin
+ */
 const signin = async (req, res) => {
   // Ici le couple email/mot de passe a déjà été vérifié dans un autre middleware
   res.send({ token: generateJWT(req.user) });
