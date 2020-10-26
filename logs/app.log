@@ -40,3 +40,4 @@
 {"message":"::1 - - [09/Oct/2020:13:48:33 +0000] \"POST /api/auth/signin HTTP/1.1\" 401 - \"-\" \"PostmanRuntime/7.26.5\"\n","level":"info"}
 {"message":"::1 - - [09/Oct/2020:13:48:43 +0000] \"POST /api/auth/signin HTTP/1.1\" 401 - \"-\" \"PostmanRuntime/7.26.5\"\n","level":"info"}
 {"message":"::1 - - [09/Oct/2020:13:48:50 +0000] \"POST /api/auth/signin HTTP/1.1\" 200 165 \"-\" \"PostmanRuntime/7.26.5\"\n","level":"info"}
+{"message":"Le serveur d'authentification écoute sur http://localhost:3090","level":"info"}
